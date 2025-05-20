@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head><base target="_blank"><link rel="stylesheet" type="text/css" href="https://app.wandb.ai/normalize.css" />
+    <meta charset="UTF-8">
+    <title>Attention Connectivity Visualization</title>
+    <style>
+        body { 
+            font-family: 'Arial Unicode MS', 'Noto Sans Devanagari', Arial, sans-serif;
+            margin: 20px; 
+            text-align: center;
+        }
+        .container { 
+            display: inline-block; 
+            text-align: center;
+            margin: 0 auto;
+        }
+        .output-chars { 
+            display: flex; 
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        .input-chars { 
+            display: flex; 
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .char { 
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 24px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 30px;
+            text-align: center;
+        }
+        .output-char { 
+            background-color: #f0f0f0; 
+            border-radius: 5px; 
+        }
+        .input-char { 
+            background-color: #e0e0e0; 
+            border-radius: 3px; 
+        }
+        .connection-line {
+            position: absolute;
+            background-color: rgba(0, 200, 0, 0.5);
+            height: 4px;
+            transform-origin: left center;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .selected { 
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+        .highlighted { 
+            background-color: rgba(76, 175, 80, 0.3);
+            transform: scale(1.1);
+        }
+        .controls { 
+            margin: 20px 0; 
+        }
+        .slider { 
+            width: 300px; 
+            margin: 0 10px; 
+        }
+        .threshold-value { 
+            display: inline-block; 
+            width: 50px; 
+        }
+        h2 { color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Attention Connectivity Visualization</h2>
+        
+        <div class="controls">
+            <label>Connection Threshold: </label>
+            <input type="range" min="0" max="100" value="30" class="slider" id="thresholdSlider">
+            <span class="threshold-value" id="thresholdValue">0.30</span>
+        </div>
+        
+        <div class="output-chars" id="outputChars"></div>
+        <div class="input-chars" id="inputChars"></div>
+    </div>
+
+    <script>
+        // Convert Python data to JS format
+        const attentionData = [[0.9916971921920776, 0.008279801346361637, 1.1825329238490667e-05, 9.417909495823551e-06, 3.960367678246257e-07, 1.089894453798479e-06, 6.017978648742428e-08, 6.139998021126303e-08, 9.846633730603571e-08, 4.87718798680703e-09, 2.060747572585342e-09], [0.00058661715593189, 0.9833827614784241, 0.008625177666544914, 0.006002584472298622, 0.00046521335025317967, 0.0008985849563032389, 1.8001364878728054e-05, 1.3305667380336672e-05, 4.667308985517593e-06, 1.3833218872605357e-06, 1.664383376009937e-06], [1.8564975334811606e-08, 0.016244493424892426, 0.5058875679969788, 0.409217894077301, 0.019450420513749123, 0.04780098423361778, 0.0004955648328177631, 0.00040975306183099747, 0.0003825953172054142, 7.732968515483662e-05, 3.3416908991057426e-05], [1.3019795101255633e-14, 6.119513273006305e-05, 0.001278963522054255, 0.4895503520965576, 0.0745285376906395, 0.40372830629348755, 0.005311479791998863, 0.011954638175666332, 0.012287486344575882, 0.0009851146023720503, 0.00031397995189763606], [7.908848371728746e-18, 4.7267554315055804e-09, 2.5099723188759526e-06, 0.0049910168163478374, 0.18114939332008362, 0.3081267178058624, 0.12641926109790802, 0.20421946048736572, 0.15386740863323212, 0.020500849932432175, 0.0007234427612274885], [7.667595470116158e-23, 2.775509422986433e-12, 1.3170650126070882e-09, 3.524708063196158e-06, 0.0012968081282451749, 0.042600926011800766, 0.09973715245723724, 0.2916536033153534, 0.24872718751430511, 0.2654665410518646, 0.050514258444309235], [3.790162121152919e-29, 3.226150634489107e-17, 8.112937134163029e-14, 2.531279186257507e-09, 0.00022018715390004218, 0.006802196614444256, 0.04630688205361366, 0.047959793359041214, 0.15143531560897827, 0.32530683279037476, 0.4219686985015869], [1.5712213174073087e-38, 6.307578340049242e-26, 1.3174362838619114e-21, 2.7367465119196993e-15, 8.054297229165286e-10, 5.070689894637326e-07, 3.3282987715210766e-05, 0.00022445530339609832, 0.0017446033889427781, 0.10967174172401428, 0.8883254528045654], [8.883867926218616e-40, 1.2654807793201076e-28, 4.911121111668419e-25, 2.028972325226627e-19, 3.5947668317526035e-14, 3.43326408969169e-11, 1.1735825644620945e-08, 1.0328585631214082e-07, 5.062219497631304e-05, 0.0016793018439784646, 0.9982700347900391], [1.279773657603176e-39, 4.0572172848461755e-29, 1.3850175866156639e-24, 1.365343349727747e-20, 4.1522394166419176e-16, 7.65044494768774e-13, 1.2089672596360401e-09, 7.11099659156389e-08, 1.325225366599625e-05, 0.0008604914764873683, 0.9991262555122375]];
+        const inputChars = ["s", "w", "a", "a", "c", "h", "a", "a", "l", "i", "t"];
+        const outputChars = ["\u0938", "\u094d", "\u0935", "\u093e", "\u091a", "\u093e", "\u0932", "\u093f", "\u0924"];
+        
+        let currentSelected = 0;
+        let threshold = 0.3;
+        
+        function initVisualization() {
+            renderOutputChars();
+            renderInputChars();
+            updateConnections();
+            
+            // Setup threshold slider
+            document.getElementById('thresholdSlider').addEventListener('input', function(e) {
+                threshold = parseInt(e.target.value) / 100;
+                document.getElementById('thresholdValue').textContent = threshold.toFixed(2);
+                updateConnections();
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', updateConnections);
+        }
+        
+        function renderOutputChars() {
+            const container = document.getElementById('outputChars');
+            container.innerHTML = '';
+            
+            outputChars.forEach((char, idx) => {
+                const charElement = document.createElement('div');
+                charElement.className = `char output-char ${idx === currentSelected ? 'selected' : ''}`;
+                charElement.textContent = char;
+                charElement.dataset.index = idx;
+                
+                charElement.addEventListener('mouseover', () => selectCharacter(idx));
+                charElement.addEventListener('click', () => selectCharacter(idx));
+                
+                container.appendChild(charElement);
+            });
+        }
+        
+        function renderInputChars() {
+            const container = document.getElementById('inputChars');
+            container.innerHTML = '';
+            
+            inputChars.forEach((char, idx) => {
+                const charElement = document.createElement('div');
+                charElement.className = 'char input-char';
+                charElement.textContent = char;
+                charElement.dataset.index = idx;
+                container.appendChild(charElement);
+            });
+        }
+        
+        function selectCharacter(idx) {
+            currentSelected = idx;
+            renderOutputChars();
+            updateConnections();
+        }
+        
+        function updateConnections() {
+            // Clear existing connections
+            document.querySelectorAll('.connection-line').forEach(el => el.remove());
+            document.querySelectorAll('.input-char').forEach(el => el.classList.remove('highlighted'));
+            
+            const outputChar = document.querySelector(`.output-char[data-index="${currentSelected}"]`);
+            if (!outputChar) return;
+            
+            const outputRect = outputChar.getBoundingClientRect();
+            const attentionWeights = attentionData[currentSelected];
+            const maxWeight = Math.max(...attentionWeights);
+            
+            inputChars.forEach((_, idx) => {
+                const inputChar = document.querySelector(`.input-char[data-index="${idx}"]`);
+                if (!inputChar) return;
+                
+                const inputRect = inputChar.getBoundingClientRect();
+                const normalizedWeight = attentionWeights[idx] / maxWeight;
+                
+                if (normalizedWeight >= threshold) {
+                    inputChar.classList.add('highlighted');
+                    
+                    const line = document.createElement('div');
+                    line.className = 'connection-line';
+                    
+                    const startX = outputRect.left + outputRect.width/2 - window.scrollX;
+                    const startY = outputRect.top + outputRect.height - window.scrollY;
+                    const endX = inputRect.left + inputRect.width/2 - window.scrollX;
+                    const endY = inputRect.top - window.scrollY;
+                    
+                    const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                    const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+                    
+                    line.style.width = `${length}px`;
+                    line.style.left = `${startX}px`;
+                    line.style.top = `${startY}px`;
+                    line.style.transform = `rotate(${angle}deg)`;
+                    line.style.opacity = normalizedWeight;
+                    
+                    document.body.appendChild(line);
+                }
+            });
+        }
+        
+        // Initialize visualization
+        document.addEventListener('DOMContentLoaded', initVisualization);
+    </script>
+</body>
+</html>
