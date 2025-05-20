@@ -50,3 +50,7 @@ Each model saves its predictions in a **dedicated output folder**, structured as
 ## To Execute
 
 ## python3 train.py --sweep --dataset_path <path_to_the_dataset>
+--sweep - indicates sweeps to be true and executes sweep config so that we can fit a best hyperparameter for our model for the given dataset.
+
+## python3 train.py --dataset_path <path_to_the_dataset>
+- Run with default model config .
