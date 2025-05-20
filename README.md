@@ -11,4 +11,5 @@ Each folder contains modular components for data loading, model architecture des
 
 Use these implementations to compare the effectiveness of attention mechanisms in character-level transliteration (e.g., Latin to Devanagari).
 
-# wandb report link : https://wandb.ai/malavika_da24s010-indian-institute-of-technology-madras/da6401_assignment3/reports/DA6401-Assignment-3--VmlldzoxMjg1NTQwNg
+# wandb report link : 
+https://wandb.ai/malavika_da24s010-indian-institute-of-technology-madras/da6401_assignment3/reports/DA6401-Assignment-3--VmlldzoxMjg1NTQwNg
