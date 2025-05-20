@@ -19,15 +19,13 @@ Each folder (`attn_encoder_decoder`, `vanilla_encoder_decoder`) contains the fol
 
 ### 2. `model_attn.py`
 - Defines the encoder-decoder architecture.
-- `attn_encoder_decoder`: includes an attention module (Luong-style).
-- `vanilla_encoder_decoder`: uses basic encoder-decoder without attention.
-- Both models support configurable embedding size, number of layers, and RNN type (RNN/GRU/LSTM).
+- `attn_encoder_decoder`: includes an attention module.
+- Both models support configurable embedding size, hidden size , number of layers, and RNN type (RNN/GRU/LSTM).
 
 ### 3. `train_attn.py`
 - Handles training with or without Weights & Biases (wandb) sweeps.
 - Supports:
   - Hyperparameter configuration
-  - Layer freezing options (optional)
   - Training loop with validation and model checkpointing
 - Logs metrics (accuracy, loss) and saves the best model.
 
@@ -37,7 +35,7 @@ Each folder (`attn_encoder_decoder`, `vanilla_encoder_decoder`) contains the fol
   - Character-level and word-level accuracy
   - Beam search decoding
   - Attention heatmaps for the test split
-  - Optionally logs attention visualizations (for `attn_encoder_decoder`)
+  - logs attention visualizations (for `attn_encoder_decoder`)
 - Saves predictions to a `.tsv` or `.csv` file with columns:  
   `source`, `target`, `prediction`, `status`.
 - ## python3 evaluate_attn.py --model_path <path_to_bestmodel> --dataset_path <path_to_dataset>
