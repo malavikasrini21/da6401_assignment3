@@ -49,4 +49,4 @@ Each model saves its predictions in a **dedicated output folder**, structured as
 
 ## To Execute
 
-## python3 train_attn.py --sweep --dataset_path <path_to_the_dataset>
+## python3 train.py --sweep --dataset_path <path_to_the_dataset>
