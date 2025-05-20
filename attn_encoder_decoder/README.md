@@ -45,12 +45,12 @@ Each folder (`attn_encoder_decoder`, `vanilla_encoder_decoder`) contains the fol
 ## 📁 Output Folder
 
 Each model saves its predictions in a **dedicated output folder**, structured as:
-predictions/
-└── test_predictions.tsv # Contains predictions + correctness labels
+predictions_attn folder
+└── decoded_outputs.tsv # Contains Source + Ground Truth + predictions + correctness of labels
 
 ## To Execute
 
-python3 train_attn.py --dataset_path <path_to_the_dataset>
+##python3 train_attn.py --dataset_path <path_to_the_dataset>
 
-As the attention logic is implemented with the best sweep config of vanilla model the hyperparameters mentioned in the report are mentioned under default config
+As the attention logic is implemented with the best sweep config of vanilla model the hyperparameters mentioned in the report are mentioned under default config.
 
