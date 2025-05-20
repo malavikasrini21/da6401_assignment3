@@ -13,7 +13,7 @@ Each folder (`attn_encoder_decoder`, `vanilla_encoder_decoder`) contains the fol
 
 ### 1. `dataload.py`
 - Loads the dataset from TSV files.
-- Prepares train/validation/test splits.
+- train/validation/test splits of Dakshina Dataset is handled.
 - Tokenizes inputs and targets.
 - Returns vocabularies and PyTorch DataLoaders.
 
