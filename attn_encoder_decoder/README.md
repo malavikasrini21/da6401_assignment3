@@ -40,7 +40,7 @@ Each folder (`attn_encoder_decoder`, `vanilla_encoder_decoder`) contains the fol
   - Optionally logs attention visualizations (for `attn_encoder_decoder`)
 - Saves predictions to a `.tsv` or `.csv` file with columns:  
   `source`, `target`, `prediction`, `status`.
-- python3 evaluate_attn.py --model_path <path_to_bestmodel> --dataset_path <path_to_dataset>
+- ## python3 evaluate_attn.py --model_path <path_to_bestmodel> --dataset_path <path_to_dataset>
 
 ---
 
